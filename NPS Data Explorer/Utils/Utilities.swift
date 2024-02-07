@@ -17,8 +17,15 @@ struct Utilities {
         return rawText.prefix(1).capitalized + rawText.dropFirst().lowercased()
     }
     
-    static func getWeatherAPIEndPoint(lat: String, long: String) -> String{
-        return "https://api.weather.gov/points/\(lat),\(long)"
+    static func getWeatherAPIEndPoint(lat: String, lon: String) -> String{
+        if let path = Bundle.main.path(forResource: "Config", ofType: "plist") {
+            if let configDict = NSDictionary(contentsOfFile: path) {
+                if let apiKey = configDict["OpenWeatherKey"] as? String {
+                    return "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(apiKey)"
+                }
+            }
+        }
+        
     }
     
     static func celciusToFahrenheit(c: Float) -> Int {

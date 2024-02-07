@@ -27,109 +27,11 @@ class WeatherViewModel: ObservableObject {
         }
     }
     
-    func fetchDetailedForecast() {
-        let gridUrl = self.forecastInformation[0].properties.forecastGridData
-        
-        // Create a URLSession
-        let gridSession = URLSession.shared
-        
-        // Create a data task to fetch the data
-        let gridTask = gridSession.dataTask(with: gridUrl) { [weak self] (data, response, error) in
-            guard let self = self else { return }
-            // Check for errors
-            if let error = error {
-                print("Error fetching data: \(error)")
-                self.isLoading = false
-                return
-            }
-            // Ensure there is data
-            guard let data = data else {
-                print("No data returned")
-                self.isLoading = false
-                return
-            }
-            // Attempt to decode the data
-            do {
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .iso8601
-                let weatherDetailedData = try decoder.decode(WeatherDetailedForecast.self, from: data)
-                // Update forecastItems on the main thread
-                DispatchQueue.main.async {
-                    self.forecastDetailedInformation = [weatherDetailedData]
-                    self.isLoading = false
-                    self.formatData()
-                }
-            } catch {
-                print("Error decoding DF JSON: \(error)")
-                self.isLoading = false
-            }
-        }
-        gridTask.resume()
-    }
     
-    func fetchForecast() {
-        // URL of the endpoint
-        //guard
-        let url = self.forecastInformation[0].properties.forecast //else {
-        //   print("Invalid URL")
-        //   return
-        //}
-        //guard let url = URL(string: "https://api.weather.gov/gridpoints/SGX/57,14/forecast") else {
-        //    print("Invalid URL")
-        //    return
-        //}
-        
-        // Create a URLSession
-        let session = URLSession.shared
-        
-        // Create a data task to fetch the data
-        let task = session.dataTask(with: url) { [weak self] (data, response, error) in
-            guard let self = self else { return }
-            // Check for errors
-            if let error = error {
-                print("Error fetching data: \(error)")
-                self.isLoading = false
-                return
-            }
-            // Ensure there is data
-            guard let data = data else {
-                print("No data returned")
-                self.isLoading = false
-                return
-            }
-            // Attempt to decode the data
-            do {
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .iso8601
-                
-                let weatherData = try decoder.decode(WeatherItem.self, from: data)
-                // Update forecastItems on the main thread
-                DispatchQueue.main.async {
-                    self.forecastItems = weatherData.properties.periods
-                    self.formatData()
-                    self.fetchDetailedForecast()
-                }
-            } catch {
-                print("Error decoding F JSON: \(error)")
-                self.isLoading = false
-            }
-        }
-        
-        
-        
-        // Start the data task
-        
-        task.resume()
-        
-        
-        // Start the data task
-        
-        
-    }
     
-    func fetchData() {
+    func fetchWeatherData() {
         // Build WeatherPoint object here
-        guard let wpUrl = URL(string: Utilities.getWeatherAPIEndPoint(lat: self.latitude, long: self.longitude)) else {
+        guard let wpUrl = URL(string: Utilities.getWeatherAPIEndPoint(lat: self.latitude, lon: self.longitude)) else {
             print("Invalid URL")
             return
         }
@@ -162,7 +64,7 @@ class WeatherViewModel: ObservableObject {
                 // Update forecastItems on the main thread
                 DispatchQueue.main.async {
                     self.forecastInformation = [weatherPointData]
-                    self.fetchForecast()
+                    
                 }
             } catch {
                 print("Error decoding WP JSON: \(error)")
@@ -229,8 +131,9 @@ class WeatherViewModel: ObservableObject {
                                     // parse data here
                                     self.latitude = self.locationInformation[0].lat
                                     self.longitude = self.locationInformation[0].lon
-                                    //set self.lat and self.long
-                                    self.fetchData()
+                                    
+                                    // now call openweather api here
+                                    self.fetchWeatherData()
                                 }
                             } catch {
                                 print("Error decoding Location JSON: \(error)")

@@ -75,24 +75,6 @@ struct SearchBar: View {
             Spacer()
         }
         
-        
-        
-        //
-        //                            Button(action: {
-        //                                //viewModel.latitude = ti_latitude
-        //                                //viewModel.longitude = ti_longitude
-        //                                viewModel.fetchLatLong(query: self.ti_location)
-        //                                // Action to perform when the button is pressed
-        //                            }) {
-        //                                Text("Get Weather")
-        //                                    //.foregroundColor(.white) // Set text color to white
-        //                                    .padding() // Add padding around the text
-        //                                //.background(Color.blue) // Set background color to blue
-        //                                    .cornerRadius(10) // Apply corner radius to create rounded rectangle
-        //                            }
-        //                            .padding(.leading)
-        //                            Spacer()
-        
     }
 
 }
